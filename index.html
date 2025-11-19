@@ -35,6 +35,50 @@
       center: [175.0709, -36.7990], // Waiheke Island coordinates
       zoom: 12
     });
+
+    // Add navigation controls
+    map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+    // Add scale control
+    map.addControl(new maplibregl.ScaleControl({
+      maxWidth: 100,
+      unit: 'metric'
+    }), 'bottom-left');
+
+    // Swap between trail layers on hover
+    map.on('mouseenter', 'te-ara-hura', function() {
+      map.setLayoutProperty('te-ara-hura', 'visibility', 'none');
+      map.setLayoutProperty('te-ara-hura-hover', 'visibility', 'visible');
+    });
+
+    map.on('mouseleave', 'te-ara-hura-hover', function() {
+      map.setLayoutProperty('te-ara-hura', 'visibility', 'visible');
+      map.setLayoutProperty('te-ara-hura-hover', 'visibility', 'none');
+    });
+
+    // When a click event occurs on a feature in the places layer, open a popup at the
+    // location of the click, with description HTML from its properties.
+    map.on('click', 'te-ara-hura-hover', (e) => {
+        const coordinates = e.lngLat;
+        // const description = e.features[0].properties.description;
+        // The data does not have a description property, so use a placeholder
+        const description = "<strong>Te Ara Hura Trail</strong><p>A beautiful trail on Waiheke Island.</p>";
+
+        new maplibregl.Popup()
+            .setLngLat(coordinates)
+            .setHTML(description)
+            .addTo(map);
+    });
+
+    // Change the cursor to a pointer when the mouse is over the places layer.
+    map.on('mouseenter', 'te-ara-hura-hover', () => {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    // Change it back to a pointer when it leaves.
+    map.on('mouseleave', 'te-ara-hura-hover', () => {
+        map.getCanvas().style.cursor = '';
+    });
   </script>
 </body>
 </html>
